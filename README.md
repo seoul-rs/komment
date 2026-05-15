@@ -95,7 +95,7 @@ In a production environment, you would typically handle this through an OAuth fl
 
 Detailed documentation is available in the `doc/` folder:
 
-- [**HOWTOUSE.md**](./doc/HOWTOUSE.md): The main guide for integration and deployment.
+- [**HOW-TO-USE.md**](./doc/HOW-TO-USE.md): The main guide for integration and deployment.
 - [**DESIGN.md**](./doc/DESIGN.md): Architectural overview and design decisions.
 - [**SECURITY.md**](./doc/SECURITY.md): Best practices for securing API tokens.
 - [**CLOUDFLARE.md**](./doc/CLOUDFLARE.md): Instructions for the Rust/WASM Cloudflare Worker backend.
