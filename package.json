@@ -1,0 +1,12 @@
+{
+  "name": "komment",
+  "author": "Seungjin Kim",
+  "license": "MIT OR Apache-2.0",
+  "devDependencies": {
+    "wrangler": "^4.90.1"
+  },
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev"
+  }
+}

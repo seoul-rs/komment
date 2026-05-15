@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Komment WASM</title>
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+      .komment-comment { border: 1px solid #d0d7de; border-radius: 6px; margin: 16px 0; overflow: hidden; }
+      .komment-comment-header { background-color: #f6f8fa; padding: 8px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #d0d7de; font-size: 12px; color: #57606a; }
+      .komment-comment-body { padding: 16px; }
+      .komment-body { margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+      img { border-radius: 50%; }
+      pre { background: #f6f8fa; padding: 16px; overflow: auto; border-radius: 6px; }
+    </style>
+  </head>
+  <body>
+    <h1>Komment WASM Demo</h1>
+    <p>This is a proof of concept of a komment-like commenting system running in WebAssembly.</p>
+    <div id="komment">Loading...</div>
+
+    <hr />
+    <p><small>Note: GitHub GraphQL API requires an access token. You can set it in your browser console using <code>localStorage.setItem('github_token', 'your_token_here')</code> and then refresh.</small></p>
+
+    <script type="module">
+      import init, { Komment } from "./pkg/komment.js";
+
+      async function run() {
+        try {
+          await init();
+
+          const config = {
+            repo: "komment/komment",
+            repo_id: "",
+            category: "Announcements",
+            category_id: "",
+            mapping: "title",
+            term: window.location.href, // Use current URL as the search term
+            token: localStorage.getItem("github_token")
+          };
+
+          const komment = new Komment(config);
+          
+          const data = await komment.fetch_discussion();
+          console.log("Data:", data);
+          komment.render("komment", data);
+        } catch (e) {
+          console.error("Error:", e);
+          document.getElementById("komment").innerHTML = `<p style="color: red;">Error: ${e}</p>
+          <p>Please ensure you have a valid GitHub token set in localStorage if you are encountering rate limits or trying to access private data.</p>
+          <pre>localStorage.setItem('github_token', 'your_token')</pre>`;
+        }
+      }
+
+      run();
+    </script>
+  </body>
+</html>

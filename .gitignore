@@ -1,0 +1,9 @@
+/target
+/worker/node_modules/
+node_modules
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example

@@ -1,0 +1,11 @@
+name = "komment-worker"
+main = "build/worker/index.js"
+compatibility_date = "2023-10-30"
+
+[[rules]]
+globs = ["**/*.wasm"]
+type = "CompiledWasm"
+
+[vars]
+# GITHUB_CLIENT_ID = "..."
+# GITHUB_CLIENT_SECRET = "..." #(Use `wrangler secret put GITHUB_CLIENT_SECRET` for this)
