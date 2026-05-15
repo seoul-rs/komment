@@ -1,60 +1,52 @@
-# Deploying to Cloudflare Workers (The Komment Architecture)
+# Deploying to Cloudflare Workers
 
-This guide explains how to use a Cloudflare Worker as a secure, high-performance relay for your GitHub App. This architecture perfectly mirrors how the original `komment` works.
+Komment uses the modern Cloudflare Workers + Static Assets architecture, all implemented in Rust.
 
-## 1. How it works
-Your Cloudflare Worker acts as a **Relay**:
-- It keeps your GitHub App's `Client Secret` hidden.
-- It handles the authentication handshake (`/api/token`).
-- It proxies all GraphQL requests (`/api/graphql`) to GitHub, ensuring your API interactions are centralized and can be secured with CORS.
+## Prerequisites
 
-## 2. Setup
-...
-3. **Deploy**:
+Ensure you have the following installed:
+- `worker-build`: `cargo install worker-build`
+- `wrangler`: `npm install -g wrangler`
+
+## Unified Configuration
+
+The project is managed through `worker/wrangler.toml`. This file handles:
+- **Routing**: Points `main` to the built Rust binary.
+- **Assets**: Maps `directory = "../public"` to serve your frontend files.
+- **Build**: Defines the custom command `worker-build --release` to compile the Rust worker logic.
+
+## Deployment Steps
+
+1. **Rebuild the Frontend WASM**:
    ```bash
+   wasm-pack build --target web
+   ```
+
+2. **Sync Public Assets**:
+   Ensure `public/` contains your `index.html` and `pkg/` folder.
+
+3. **Deploy with Wrangler**:
+   ```bash
+   cd worker
    wrangler deploy
    ```
 
-## 3. Integration Code Example
-
-```javascript
-import init, { Komment } from "./pkg/komment.js";
-
-// Your Cloudflare Worker base URL
-const WORKER_BASE = "https://komment-wasm-worker.s42.workers.dev";
-
-async function run() {
-  await init();
-
-  // 1. Handle Login Callback
-  const code = new URLSearchParams(window.location.search).get("code");
-  if (code) {
-    const res = await fetch(`${WORKER_BASE}/api/token`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code })
-    });
-    const result = await res.json();
-    localStorage.setItem('gh_token', result.access_token);
-  }
-
-  // 2. Setup Widget
-  const config = {
-    repo: "owner/repo",
-    mapping: "title",
-    term: window.location.href,
-    token: localStorage.getItem('gh_token'),
-    api_url: `${WORKER_BASE}/api/graphql` // Proxy all calls through your worker!
-  };
-
-  const komment = new Komment(config);
-  const data = await komment.fetch_discussion();
-  komment.render("komment", data);
-}
+Alternatively, use the provided **Justfile** to automate all three steps:
+```bash
+just deploy
 ```
 
-## 4. Advantages of Cloudflare Workers + Rust
-- **Latency**: Workers run on Cloudflare's edge, meaning extremely fast response times globally.
-- **Cold Starts**: WASM-based workers have near-zero cold start times compared to Node.js.
-- **Type Safety**: Using Rust on both the client and server ensures a robust and predictable system.
-- **Cost**: The free tier covers 100,000 requests per day.
+## Environment Variables (Secrets)
+
+For security, GitHub credentials are not stored in the configuration file. You must set them as secrets:
+
+```bash
+npx wrangler secret put GITHUB_CLIENT_ID
+npx wrangler secret put GITHUB_CLIENT_SECRET
+```
+
+## Troubleshooting
+
+- **404 Errors**: Ensure your `wrangler.toml` has the correct assets directory path.
+- **500 Errors**: Check your worker logs with `wrangler tail`. Most 500 errors in the worker are related to missing secrets or incorrect GitHub App permissions.
+- **WASM Load Failures**: Ensure your frontend imports use absolute paths (`/pkg/komment.js`) to support sub-directories.
