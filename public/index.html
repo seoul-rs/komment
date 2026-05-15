@@ -29,13 +29,14 @@
           await init();
 
           const config = {
-            repo: "komment/komment",
+            repo: "seoul-rs/seoul-rs",
             repo_id: "",
             category: "Announcements",
             category_id: "",
             mapping: "title",
             term: window.location.href, // Use current URL as the search term
-            token: localStorage.getItem("github_token")
+            token: localStorage.getItem("github_token"),
+            api_url: "https://komment.s42.workers.dev/api/graphql"
           };
 
           const komment = new Komment(config);
