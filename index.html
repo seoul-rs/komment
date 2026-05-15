@@ -2,55 +2,108 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Komment WASM</title>
     <style>
-      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.5; }
       .komment-comment { border: 1px solid #d0d7de; border-radius: 6px; margin: 16px 0; overflow: hidden; }
       .komment-comment-header { background-color: #f6f8fa; padding: 8px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #d0d7de; font-size: 12px; color: #57606a; }
       .komment-comment-body { padding: 16px; }
       .komment-body { margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
       img { border-radius: 50%; }
       pre { background: #f6f8fa; padding: 16px; overflow: auto; border-radius: 6px; }
+      
+      #login-btn { 
+        background: #24292f; 
+        color: white; 
+        border: none; 
+        padding: 10px 20px; 
+        border-radius: 6px; 
+        cursor: pointer; 
+        font-weight: 600;
+        display: none;
+        margin-top: 20px;
+      }
+      #login-btn:hover { background: #1b1f23; }
+      .error { color: #cf222e; background: #ffebe9; padding: 12px; border-radius: 6px; margin-top: 20px; }
     </style>
   </head>
   <body>
-    <h1>Komment WASM Demo</h1>
-    <p>This is a proof of concept of a komment-like commenting system running in WebAssembly.</p>
+    <h1>Komment WASM</h1>
+    <p>A high-performance commenting system powered by Rust and GitHub Discussions.</p>
+    
     <div id="komment">Loading...</div>
-
-    <hr />
-    <p><small>Note: GitHub GraphQL API requires an access token. You can set it in your browser console using <code>localStorage.setItem('github_token', 'your_token_here')</code> and then refresh.</small></p>
+    <button id="login-btn">Login with GitHub to comment</button>
 
     <script type="module">
       import init, { Komment } from "./pkg/komment.js";
+
+      // Configuration
+      const WORKER_URL = "https://komment.s42.workers.dev";
+      const REPO = "seungjin/komment";
+      const CLIENT_ID = "----"; // Set your GitHub App Client ID here
 
       async function run() {
         try {
           await init();
 
+          // 1. Handle OAuth Callback
+          const params = new URLSearchParams(window.location.search);
+          const code = params.get("code");
+          if (code) {
+            document.getElementById("komment").innerText = "Authenticating...";
+            try {
+              const res = await fetch(`${WORKER_URL}/api/token`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code })
+              });
+              const data = await res.json();
+              if (data.access_token) {
+                localStorage.setItem("gh_token", data.access_token);
+              } else if (data.error) {
+                throw new Error(data.error_description || data.error);
+              }
+              window.history.replaceState({}, document.title, window.location.pathname);
+            } catch (err) {
+              console.error("Token exchange failed:", err);
+            }
+          }
+
+          // 2. Setup Configuration
+          const token = localStorage.getItem("gh_token");
           const config = {
-            repo: "seungjin/komment",
-            repo_id: "",
-            category: "Announcements",
-            category_id: "",
+            repo: REPO,
             mapping: "title",
-            term: window.location.href, // Use current URL as the search term
-            token: localStorage.getItem("github_token"),
-            api_url: "https://komment.s42.workers.dev/api/graphql"
+            term: window.location.href,
+            token: token,
+            api_url: `${WORKER_URL}/api/graphql`
           };
 
+          // 3. Render
           const komment = new Komment(config);
-          
-          const data = await komment.fetch_discussion();
-          console.log("Data:", data);
-          komment.render("komment", data);
+          try {
+            const data = await komment.fetch_discussion();
+            komment.render("komment", data);
+          } catch (e) {
+            console.error("Komment error:", e);
+            if (!token) {
+              document.getElementById("komment").innerText = "Please log in to view and post comments.";
+              document.getElementById("login-btn").style.display = "block";
+            } else {
+              document.getElementById("komment").innerHTML = `<div class="error">Failed to load discussion. Ensure the repository exists and the token is valid.</div>`;
+            }
+          }
         } catch (e) {
-          console.error("Error:", e);
-          document.getElementById("komment").innerHTML = `<p style="color: red;">Error: ${e}</p>
-          <p>Please ensure you have a valid GitHub token set in localStorage if you are encountering rate limits or trying to access private data.</p>
-          <pre>localStorage.setItem('github_token', 'your_token')</pre>`;
+          console.error("Initialization error:", e);
+          document.getElementById("komment").innerHTML = `<div class="error">Error: ${e}</div>`;
         }
       }
+
+      // Handle Login Button
+      document.getElementById("login-btn").onclick = () => {
+        window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=public_repo`;
+      };
 
       run();
     </script>
