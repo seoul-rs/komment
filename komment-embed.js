@@ -212,8 +212,9 @@ window.komment = async function(repo) {
 
     loginBtn.onclick = () => {
         const CLIENT_ID = "Iv23liQokIChd3ylSI7R";
-        const redirectUri = window.location.origin + window.location.pathname;
-        window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=public_repo&redirect_uri=${encodeURIComponent(redirectUri)}`;
+        const currentUrl = window.location.origin + window.location.pathname;
+        const callbackUrl = `${WORKER_URL}/api/auth/callback`;
+        window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=public_repo&redirect_uri=${encodeURIComponent(callbackUrl)}&state=${encodeURIComponent(currentUrl)}`;
     };
 
     instance = new Komment({

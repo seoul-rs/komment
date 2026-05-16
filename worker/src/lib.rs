@@ -35,6 +35,18 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
     let router = Router::new();
 
     router
+        .get("/api/auth/callback", |req, _ctx| {
+            let url = req.url()?;
+            let query: std::collections::HashMap<_, _> = url.query_pairs().into_owned().collect();
+            let code = query.get("code").ok_or("Missing code")?;
+            let state = query.get("state").ok_or("Missing state")?;
+
+            // Redirect back to the original site with the code
+            let mut redirect_url = Url::parse(state).map_err(|e| worker::Error::from(e.to_string()))?;
+            redirect_url.query_pairs_mut().append_pair("code", code);
+
+            Response::redirect(redirect_url)
+        })
         .post_async("/api/token", |mut req, ctx| async move {
             let data: TokenRequest = req.json().await?;
             let client_id = ctx.env.var("GITHUB_CLIENT_ID")?.to_string();
