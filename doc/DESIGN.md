@@ -32,5 +32,5 @@ No database is required.
 ## Key Design Decisions
 
 - **Zero-Config Styling**: All CSS is bundled and injected by the embed script, allowing the widget to be used on any site with a single line of HTML and no external CSS files.
-- **Portable Dependencies**: Uses `import.meta.url` to resolve WASM dependencies relative to the script's hosting location, enabling CDN usage.
+- **Portable Dependencies**: Uses `import.meta.url` to resolve WASM dependencies and the `workerUrl` relative to the script's hosting location, enabling CDN usage and zero-config deployment.
 - **Eventual Consistency**: Includes a retry mechanism in the frontend to handle the short delay between discussion creation and API search availability.

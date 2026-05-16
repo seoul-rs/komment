@@ -49,4 +49,4 @@ npx wrangler secret put GITHUB_CLIENT_SECRET
 
 - **404 Errors**: Ensure your `wrangler.toml` has the correct assets directory path.
 - **500 Errors**: Check your worker logs with `wrangler tail`. Most 500 errors in the worker are related to missing secrets or incorrect GitHub App permissions.
-- **WASM Load Failures**: Ensure your frontend imports use absolute paths (`/pkg/komment.js`) to support sub-directories.
+- **WASM Load Failures**: Ensure the `pkg/` folder is in the same directory as `komment-embed.js`. The script now uses relative paths for portability.

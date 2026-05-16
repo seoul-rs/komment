@@ -22,12 +22,12 @@ You need a GitHub App to handle user logins securely.
 - Click **Generate a new client secret** and copy it.
 
 ## 3. Configure the Widget
-You don't need to modify the `komment-embed.js` source code. Instead, you pass your configuration when you initialize the widget on your page:
+You don't need to modify the `komment-embed.js` source code. Instead, you pass your **Client ID** when you initialize the widget on your page. The `workerUrl` is automatically detected from the script's location, but can be overridden if needed.
 
 ```javascript
 komment('your-username/your-repo', {
-  workerUrl: 'https://your-worker.workers.dev',
-  clientId: 'your-github-client-id'
+  clientId: 'your-github-client-id' // Required
+  // workerUrl: 'https://your-worker.workers.dev', // Optional (auto-detected)
 });
 ```
 
