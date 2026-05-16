@@ -32,9 +32,7 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
         return Response::empty()?.with_cors(&cors);
     }
 
-    let router = Router::new();
-
-    router
+    let router = Router::new()
         .get("/api/auth/callback", |req, _ctx| {
             let url = req.url()?;
             let query: std::collections::HashMap<_, _> = url.query_pairs().into_owned().collect();
@@ -87,8 +85,15 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
 
             let body = res.text().await.map_err(|e| worker::Error::from(e.to_string()))?;
             Response::ok(body)
-        })
+        });
+
+    let mut response = router
         .run(req, env)
         .await?
-        .with_cors(&cors)
+        .with_cors(&cors)?;
+
+    // Extra safety: explicitly set ACAO to * for all responses (including assets)
+    response.headers_mut().set("Access-Control-Allow-Origin", "*")?;
+    
+    Ok(response)
 }
