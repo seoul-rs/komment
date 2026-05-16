@@ -25,7 +25,7 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
     // 1. Handle CORS Preflight
     let cors = Cors::default()
         .with_origins(vec!["*"])
-        .with_methods(vec![Method::Post, Method::Options])
+        .with_methods(vec![Method::Post, Method::Get, Method::Options])
         .with_allowed_headers(vec!["Content-Type", "Authorization"]);
 
     if req.method() == Method::Options {
