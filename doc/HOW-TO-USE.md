@@ -12,8 +12,8 @@ Komment stores all data in GitHub Discussions.
 You need a GitHub App to handle user logins securely.
 - Go to **[GitHub App Settings](https://github.com/settings/apps/new)**.
 - **GitHub App name**: `Komment-YourName`
-- **Homepage URL**: `https://your-domain.com`
-- **Callback URL**: `https://your-worker.workers.dev/api/auth/callback`
+- **Homepage URL**: `https://your-domain.com` (The site where you'll host the comments)
+- **Callback URL**: `https://your-worker.workers.dev/api/auth/callback` (Crucial: must end in `/api/auth/callback`)
 - **Webhooks**: Uncheck "Active".
 - **Permissions**:
   - **Repository permissions** -> **Discussions**: `Read & write`.
@@ -21,36 +21,50 @@ You need a GitHub App to handle user logins securely.
 - Copy the **Client ID**.
 - Click **Generate a new client secret** and copy it.
 
-## 3. Configure the Widget
-You don't need to modify the `komment-embed.js` source code. Instead, you pass your **Client ID** when you initialize the widget on your page. The `workerUrl` is automatically detected from the script's location, but can be overridden if needed.
-
-```javascript
-komment('your-username/your-repo', {
-  clientId: 'your-github-client-id' // Required
-  // workerUrl: 'https://your-worker.workers.dev', // Optional (auto-detected)
-});
-```
-
-## 4. Deploy
-Deploy the entire stack to Cloudflare.
+## 3. Deploy to Cloudflare
+Komment is designed to run on a Cloudflare Worker with static assets.
 ```bash
-# From the project root
+# 1. From the project root, build and deploy
 just deploy
-```
 
-## 5. Set Secrets
-Tell your Cloudflare Worker about your GitHub App credentials.
-```bash
+# 2. Set your GitHub App secrets
 cd worker
 npx wrangler secret put GITHUB_CLIENT_ID
 npx wrangler secret put GITHUB_CLIENT_SECRET
 ```
 
-## 6. Install the App
-Crucially, you must install the app on your own repository.
+## 4. Install the App
+Crucially, you must install the app on the repository where you want comments to appear.
 - Go to your GitHub App settings -> **Install App**.
 - Click **Install** on your account.
-- Select the specific repository you want to use for comments.
+- Select the specific repository (e.g., `your-username/your-repo`).
 
-## 7. Automatic Setup
-Now, simply visit your website while logged in. Komment will detect that no discussion exists for the URL and **automatically create one** in your repository's General category.
+## 5. Embed on Your Site
+You can now embed the widget on any page. You don't need to host the script on the same server; you can load it directly from your Cloudflare Worker or any CDN where you've copied the `public/` files.
+
+```html
+<div class="komment"></div>
+
+<script type="module">
+  // 1. Load the script (from your worker or CDN)
+  import "https://your-worker.workers.dev/komment-embed.js";
+  
+  // 2. Initialize
+  komment('your-username/your-repo', {
+    clientId: 'your-github-client-id' // Required
+  });
+</script>
+```
+
+## 6. Automatic Setup
+Simply visit your website while logged in with GitHub. Komment will:
+1. Detect that no discussion exists for the page.
+2. **Automatically create one** in your repository.
+3. Add a reference link in the discussion body back to your page.
+
+---
+
+### Pro-Tips & Troubleshooting
+- **CORS**: The widget automatically includes a `_headers` file to allow cross-origin script loading.
+- **Worker URL**: If your script is on a different domain than your worker, the widget automatically detects the correct worker URL from the script's source.
+- **Icons**: Action buttons (Edit/Delete) use SVG icons and will automatically adapt to your site's theme.
