@@ -1,6 +1,8 @@
-import init, { Komment } from "/pkg/komment.js";
+import init, { Komment } from "./pkg/komment.js";
 
 const WORKER_URL = "https://komment.s42.workers.dev";
+const SCRIPT_URL = import.meta.url;
+const PKG_URL = new URL("./pkg/komment_bg.wasm", SCRIPT_URL).href;
 
 // Inject styles for the spinner and the widget
 const style = document.createElement('style');
@@ -271,7 +273,7 @@ window.komment = async function(repo) {
 
     // Initialize
     if (!container.id) container.id = 'komment-widget';
-    await init();
+    await init(PKG_URL);
     await handleOAuth();
     
     const token = localStorage.getItem("gh_token");
