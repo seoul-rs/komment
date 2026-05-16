@@ -1,6 +1,7 @@
 import init, { Komment } from "./pkg/komment.js";
 
 const WORKER_URL = "https://komment.s42.workers.dev";
+const CLIENT_ID = "Iv23liQokIChd3ylSI7R";
 const SCRIPT_URL = import.meta.url;
 const PKG_URL = new URL("./pkg/komment_bg.wasm", SCRIPT_URL).href;
 
@@ -282,7 +283,6 @@ window.komment = async function(repo) {
     }
 
     loginBtn.onclick = () => {
-        const CLIENT_ID = "Iv23liQokIChd3ylSI7R";
         const currentUrl = window.location.origin + window.location.pathname;
         const callbackUrl = `${WORKER_URL}/api/auth/callback`;
         window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=public_repo&redirect_uri=${encodeURIComponent(callbackUrl)}&state=${encodeURIComponent(currentUrl)}`;

@@ -8,25 +8,24 @@ Komment provides a secure, fast, and modern way to add discussions to your websi
 
 - **Blazing Fast**: Powered by Rust compiled to WASM.
 - **No Database**: Uses GitHub Discussions as the data store.
-- **Zero-Config Threads**: Automatically creates discussion threads for every unique URL on your site.
-- **Full CRUD**: Post, Edit, and Delete comments directly from your site.
-- **Unified Architecture**: Both frontend assets and the OAuth relay run on a single Cloudflare Worker.
-- **Secure**: Uses a Cloudflare Worker proxy to safely exchange OAuth codes for tokens.
+- **Zero-Config Styling**: All CSS is bundled in the script; just add the container.
+- **Portable Script**: Load `komment-embed.js` from any domain or CDN.
+- **Multi-Domain Support**: A centralized OAuth callback allows one deployment to serve multiple sites.
+- **Full CRUD**: Post, Edit, and Delete comments with a modern icon-based UI.
+- **Automatic Provisioning**: Automatically creates threads for new pages with a reference link to the source.
 
 ## Quick Start (Embedded)
 
-To use `komment` on any website, simply add the following code:
+To use `komment` on any website, simply add the following:
 
 ```html
 <!-- 1. The container -->
 <div class="komment"></div>
 
-<!-- 2. The script (Change URL to your deployed worker) -->
-<script src="https://komment.s42.workers.dev/komment-embed.js" type="module"></script>
-
-<!-- 3. Initialize -->
+<!-- 2. Load and Initialize -->
 <script type="module">
-  import "/komment-embed.js";
+  // Change the URL to your own deployment or CDN
+  import "https://komment.s42.workers.dev/komment-embed.js";
   komment('your-username/your-repo');
 </script>
 ```
@@ -35,7 +34,7 @@ To use `komment` on any website, simply add the following code:
 
 ### Prerequisites
 - [Rust](https://www.rust-lang.org/tools/install) (2024 edition)
-- [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/)
+- [wasm-pack](https://rustwasm.github.io/wasm-pack/installer/) v0.15.0+
 - [worker-build](https://github.com/cloudflare/workers-rs) (`cargo install worker-build`)
 - [Cloudflare Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/)
 
@@ -49,7 +48,8 @@ just deploy
 
 ### 2. Configure GitHub App
 1. Create a [GitHub App](https://github.com/settings/apps/new).
-2. Set **Callback URL** to your worker domain (e.g., `https://komment.your-name.workers.dev/`).
+2. Set **Callback URL** to your worker's callback endpoint:
+   `https://komment.your-name.workers.dev/api/auth/callback`
 3. Under **Permissions**, set **Discussions** to `Read & write`.
 4. Enable **Discussions** in your target repository settings.
 

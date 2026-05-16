@@ -13,7 +13,7 @@ You need a GitHub App to handle user logins securely.
 - Go to **[GitHub App Settings](https://github.com/settings/apps/new)**.
 - **GitHub App name**: `Komment-YourName`
 - **Homepage URL**: `https://your-domain.com`
-- **Callback URL**: `https://komment.your-account.workers.dev/`
+- **Callback URL**: `https://your-worker.workers.dev/api/auth/callback`
 - **Webhooks**: Uncheck "Active".
 - **Permissions**:
   - **Repository permissions** -> **Discussions**: `Read & write`.
@@ -21,10 +21,10 @@ You need a GitHub App to handle user logins securely.
 - Copy the **Client ID**.
 - Click **Generate a new client secret** and copy it.
 
-## 3. Configure the Worker
-Update the configuration to match your new App.
-- Open `index.html` (and `foo.html`).
-- Set `const CLIENT_ID = "your-client-id";`.
+## 3. Configure the Widget
+Update the configuration in the source code before deploying.
+- Open `komment-embed.js`.
+- Set `const CLIENT_ID = "your-client-id";` (Inside the `loginBtn.onclick` handler).
 - Set `const WORKER_URL = "https://your-worker.workers.dev";`.
 
 ## 4. Deploy
