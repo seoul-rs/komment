@@ -377,8 +377,12 @@ impl Komment {
                 actions = if is_author {
                     format!(
                         r#"<div class="komment-actions">
-                            <button class="komment-edit-btn" data-id="{id}">Edit</button>
-                            <button class="komment-delete-btn" data-id="{id}">Delete</button>
+                            <button class="komment-edit-btn" data-id="{id}" title="Edit">
+                                <svg height="16" viewBox="0 0 16 16" width="16"><path d="M11.013 1.427a.75.75 0 0 1 1.06 0l2.5 2.5a.75.75 0 0 1 0 1.06l-9.5 9.5a.75.75 0 0 1-.53.22H2.25a.75.75 0 0 1-.75-.75v-2.293a.75.75 0 0 1 .22-.53l9.5-9.5Zm.97 1.06L2.97 11.513v1.517h1.517L13.513 4.03l-1.53-1.532Z"></path></svg>
+                            </button>
+                            <button class="komment-delete-btn" data-id="{id}" title="Delete">
+                                <svg height="16" viewBox="0 0 16 16" width="16"><path d="M11 1.75V3h2.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75ZM4.496 6.675a.75.75 0 1 0-1.492.15l.66 6.6A1.75 1.75 0 0 0 5.405 15h5.19c.9 0 1.652-.681 1.741-1.576l.66-6.6a.75.75 0 0 0-1.492-.149l-.66 6.6a.25.25 0 0 1-.249.225h-5.19a.25.25 0 0 1-.249-.225l-.66-6.6Z"></path></svg>
+                            </button>
                         </div>"#,
                         id = comment.id
                     )

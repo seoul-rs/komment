@@ -63,9 +63,14 @@ style.innerHTML = `
     #komment-textarea:focus { outline: none; border-color: #0969da; box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.3); }
 
     .komment-actions { display: flex; gap: 8px; }
-    .komment-edit-btn, .komment-delete-btn { background: none; border: none; color: #0969da; cursor: pointer; padding: 0; font-size: 12px; font-weight: 500; }
-    .komment-edit-btn:hover, .komment-delete-btn:hover { text-decoration: underline; }
-    .komment-delete-btn { color: var(--komment-color-danger); }
+    .komment-edit-btn, .komment-delete-btn { 
+        background: none; border: 1px solid transparent; color: #57606a; cursor: pointer; 
+        padding: 4px; border-radius: 6px; display: flex; align-items: center; justify-content: center;
+        transition: all 0.2s;
+    }
+    .komment-edit-btn:hover { background-color: var(--komment-color-bg-subtle); color: #0969da; border-color: var(--komment-color-border); }
+    .komment-delete-btn:hover { background-color: var(--komment-color-danger-bg); color: var(--komment-color-danger); border-color: rgba(207, 34, 46, 0.15); }
+    .komment-edit-btn svg, .komment-delete-btn svg { fill: currentColor; }
 
     .komment-loading-container {
         display: flex;
