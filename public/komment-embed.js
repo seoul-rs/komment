@@ -103,16 +103,36 @@ style.innerHTML = `
     }
     .komment-login-container {
         display: flex;
+        flex-direction: column;
+        align-items: center;
         justify-content: center;
         width: 100%;
         margin-top: 20px;
         padding-bottom: 20px;
+    }
+    .komment-branding {
+        font-size: 11px;
+        color: #57606a;
+        text-align: center;
+        margin-top: 10px;
+        width: 100%;
+    }
+    .komment-branding a {
+        color: inherit;
+        text-decoration: none;
+        font-weight: 600;
     }
     @keyframes komment-spin {
         to { transform: rotate(360deg); }
     }
 `;
 document.head.appendChild(style);
+
+const BRANDING_HTML = `
+    <div class="komment-branding">
+        powered by <a href="https://github.com/seungjin/komment" target="_blank">Komment</a> v0.1.0
+    </div>
+`;
 
 function getLoadingHtml(text) {
     return `<div class="komment-loading-container">
@@ -181,6 +201,7 @@ window.komment = async function(repo, config = {}) {
                 const loginDiv = document.createElement('div');
                 loginDiv.className = 'komment-login-container';
                 loginDiv.appendChild(loginBtn);
+                loginDiv.insertAdjacentHTML('beforeend', BRANDING_HTML);
                 container.appendChild(loginDiv);
                 loginBtn.style.display = 'flex';
             }
@@ -203,7 +224,9 @@ window.komment = async function(repo, config = {}) {
                     <p>Please login with GitHub to view or post comments.</p>
                     <div class="komment-login-container" id="komment-login-placeholder"></div>
                 </div>`;
-                document.getElementById("komment-login-placeholder").appendChild(loginBtn);
+                const placeholder = document.getElementById("komment-login-placeholder");
+                placeholder.appendChild(loginBtn);
+                placeholder.insertAdjacentHTML('beforeend', BRANDING_HTML);
                 loginBtn.style.display = 'flex';
             } else {
                 container.innerHTML = `<div class="error">Error: ${e}</div>`;

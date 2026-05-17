@@ -114,8 +114,6 @@ pub fn render_discussion(config: &KommentConfig, element_id: &str, data: JsValue
             editor_style = editor_style,
             branding_html = branding_html
         ));
-    } else {
-        html.push_str(&branding_html);
     }
 
     html.push_str("</div>");
