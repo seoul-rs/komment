@@ -85,26 +85,41 @@ pub fn render_discussion(config: &KommentConfig, element_id: &str, data: JsValue
 
     html.push_str("</div>");
 
+    let version = env!("CARGO_PKG_VERSION");
+    let branding_html = format!(
+        r#"<div style="font-size:11px; color:#57606a; text-align:right; margin-top:10px;">
+            powered by <a href="https://github.com/seungjin/komment" target="_blank" style="color:inherit; text-decoration:none; font-weight:600;">Komment</a> v{version}
+        </div>"#,
+        version = version
+    );
+
     if config.token.is_some() {
         let has_comments = !discussion.comments.nodes.is_empty();
         let editor_style = if has_comments { "" } else { "border-top: none; padding-top: 0; margin-top: 0;" };
-        
+
         html.push_str(&format!(
             r#"<div class="komment-editor" style="{editor_style}">
                 <textarea id="komment-textarea" placeholder="Leave a comment..."></textarea>
-                <div style="display:flex; gap:10px;">
-                    <button id="logout-btn-inline" class="komment-logout-btn">
-                        <svg height="16" viewBox="0 0 16 16" width="16" style="fill:currentColor;"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.31-1.23-.64-1.48 2.05-.23 4.2-.61 4.2-4.13 0-.91-.32-1.65-.84-2.24.08-.21.36-1.07-.08-2.21 0 0-.7-.23-2.29.86-.66-.18-1.37-.27-2.07-.27-.69 0-1.4.09-2.07.27-1.59-1.09-2.29-.86-2.29-.86-.44 1.14-.16 2-.08 2.21-.52.59-.84 1.33-.84 2.24 0 3.51 2.15 3.89 4.2 4.13-.26.21-.51.59-.59.91-.4.18-1.44.49-2.07-.59-.14-.24-.4-.44-.68-.48-.28-.04-.42.01-.1.08.2.06.41.29.54.52.19.34.18.96.48 1.16.2.14.71.1 1.05.07.01.67.01 1.3.01 1.48 0 .21-.15.46-.55.38A8.013 8.013 0 0 1 0 8c0-4.42 3.58-8 8-8z"></path></svg>
-                        Logout
-                    </button>
-                    <button id="komment-submit">Post Comment</button>
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                    <div style="display:flex; gap:10px;">
+                        <button id="logout-btn-inline" class="komment-logout-btn">
+                            <svg height="16" viewBox="0 0 16 16" width="16" style="fill:currentColor;"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.31-1.23-.64-1.48 2.05-.23 4.2-.61 4.2-4.13 0-.91-.32-1.65-.84-2.24.08-.21.36-1.07-.08-2.21 0 0-.7-.23-2.29.86-.66-.18-1.37-.27-2.07-.27-.69 0-1.4.09-2.07.27-1.59-1.09-2.29-.86-2.29-.86-.44 1.14-.16 2-.08 2.21-.52.59-.84 1.33-.84 2.24 0 3.51 2.15 3.89 4.2 4.13-.26.21-.51.59-.59.91-.4.18-1.44.49-2.07-.59-.14-.24-.4-.44-.68-.48-.28-.04-.42.01-.1.08.2.06.41.29.54.52.19.34.18.96.48 1.16.2.14.71.1 1.05.07.01.67.01 1.3.01 1.48 0 .21-.15.46-.55.38A8.013 8.013 0 0 1 0 8c0-4.42 3.58-8 8-8z"></path></svg>
+                            Logout
+                        </button>
+                        <button id="komment-submit">Post Comment</button>
+                    </div>
+                    {branding_html}
                 </div>
             </div>"#,
-            editor_style = editor_style
+            editor_style = editor_style,
+            branding_html = branding_html
         ));
+    } else {
+        html.push_str(&branding_html);
     }
 
     html.push_str("</div>");
+
 
     container.set_inner_html(&html);
 
